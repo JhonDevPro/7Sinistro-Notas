@@ -1,0 +1,394 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Notas Persistentes</title>
+    <link rel="icon" type="image/x-icon" href="notinha-vermelha.ico">
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        h1 {
+            color: #e53935;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+
+        body.light-mode h1 {
+            color: #000000;
+        }
+
+        .note-input-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        #note-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid #e53935;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #f0f0f0;
+            resize: vertical;
+            min-height: 50px;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.light-mode #note-input {
+            border-color: #000000;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        #note-input::placeholder {
+            color: #aaa;
+        }
+
+        body.light-mode #note-input::placeholder {
+            color: #666;
+        }
+
+        #add-note-btn {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode #add-note-btn {
+            background-color: #000000;
+        }
+
+        #add-note-btn:hover {
+            background-color: #c62828;
+        }
+
+        body.light-mode #add-note-btn:hover {
+            background-color: #333333;
+        }
+
+        .note-columns-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        .note-column {
+            flex: 1;
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode .note-column {
+            background-color: #f0f0f0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .note {
+            background-color: #3a3a3a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            cursor: grab;
+            position: relative;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.light-mode .note {
+            background-color: #ffffff;
+            border-color: #ccc;
+        }
+
+        .note:last-child {
+            margin-bottom: 0;
+        }
+
+        .note-content {
+            flex-grow: 1;
+            margin-right: 10px;
+            white-space: pre-wrap;
+            max-width: calc(100% - 70px);
+        }
+
+        .note-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .copy-btn, .delete-btn {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        body.light-mode .copy-btn, body.light-mode .delete-btn {
+            background-color: #000000;
+        }
+
+        .copy-btn:hover, .delete-btn:hover {
+            background-color: #c62828;
+        }
+
+        body.light-mode .copy-btn:hover, body.light-mode .delete-btn:hover {
+            background-color: #333333;
+        }
+
+        .note.dragging {
+            opacity: 0.5;
+            border: 2px dashed #e53935;
+        }
+
+        body.light-mode .note.dragging {
+            border-color: #000000;
+        }
+
+        .note-column.drag-over {
+            border: 2px dashed #e53935;
+        }
+
+        body.light-mode .note-column.drag-over {
+            border-color: #000000;
+        }
+
+        #theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode #theme-toggle-btn {
+            background-color: #000000;
+        }
+
+        #theme-toggle-btn:hover {
+            background-color: #c62828;
+        }
+
+        body.light-mode #theme-toggle-btn:hover {
+            background-color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle-btn" title="Alternar tema">🌙</button>
+    <h1>Minhas Notas Rápidas</h1>
+    <div class="note-input-container">
+        <textarea id="note-input" placeholder="Escreva sua nova nota aqui..."></textarea>
+        <button id="add-note-btn">Adicionar Nota</button>
+    </div>
+    <div class="note-columns-container">
+        <div class="note-column" id="column1"></div>
+        <div class="note-column" id="column2"></div>
+        <div class="note-column" id="column3"></div>
+    </div>
+    <script>
+        const noteInput = document.getElementById('note-input');
+        const addNoteBtn = document.getElementById('add-note-btn');
+        const column1 = document.getElementById('column1');
+        const column2 = document.getElementById('column2');
+        const column3 = document.getElementById('column3');
+        const columns = [column1, column2, column3];
+        let draggedNote = null;
+
+        // Theme toggle functionality
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            themeToggleBtn.innerHTML = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        });
+
+        // Load theme from localStorage
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggleBtn.innerHTML = '☀️';
+        }
+
+        function loadNotes() {
+            columns.forEach((column, index) => {
+                const notes = JSON.parse(localStorage.getItem(`notesColumn${index + 1}`)) || [];
+                notes.forEach(noteText => createNoteElement(noteText, column));
+            });
+        }
+
+        function saveNotes() {
+            columns.forEach((column, index) => {
+                const notes = Array.from(column.children).map(noteElement => noteElement.querySelector('.note-content').innerText);
+                localStorage.setItem(`notesColumn${index + 1}`, JSON.stringify(notes));
+            });
+        }
+
+        function createNoteElement(text, targetColumn) {
+            const noteDiv = document.createElement('div');
+            noteDiv.classList.add('note');
+            noteDiv.setAttribute('draggable', 'true');
+            const noteContent = document.createElement('div');
+            noteContent.classList.add('note-content');
+            noteContent.innerText = text;
+            const noteActions = document.createElement('div');
+            noteActions.classList.add('note-actions');
+            const copyButton = document.createElement('button');
+            copyButton.classList.add('copy-btn');
+            copyButton.innerText = 'Copiar';
+            copyButton.onclick = () => {
+                navigator.clipboard.writeText(text).then(() => {
+                    // alert('Nota copiada para a área de transferência!');
+                }).catch(err => {
+                    console.error('Erro ao copiar: ', err);
+                });
+            };
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-btn');
+            deleteButton.innerText = 'Excluir';
+            deleteButton.onclick = () => {
+                if (confirm('Tem certeza que deseja excluir esta nota?')) {
+                    noteDiv.remove();
+                    saveNotes();
+                }
+            };
+            noteActions.appendChild(copyButton);
+            noteActions.appendChild(deleteButton);
+            noteDiv.appendChild(noteContent);
+            noteDiv.appendChild(noteActions);
+            targetColumn.appendChild(noteDiv);
+        }
+
+        addNoteBtn.addEventListener('click', () => {
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                let targetColumn = columns[0];
+                let minNotes = columns[0].children.length;
+                for (let i = 1; i < columns.length; i++) {
+                    if (columns[i].children.length < minNotes) {
+                        minNotes = columns[i].children.length;
+                        targetColumn = columns[i];
+                    }
+                }
+                createNoteElement(noteText, targetColumn);
+                noteInput.value = '';
+                saveNotes();
+            } else {
+                alert('Por favor, escreva algo na nota antes de adicionar.');
+            }
+        });
+
+        noteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addNoteBtn.click();
+            }
+        });
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('note')) {
+                draggedNote = e.target;
+                setTimeout(() => {
+                    draggedNote.classList.add('dragging');
+                }, 0);
+            }
+        });
+
+        document.addEventListener('dragend', () => {
+            if (draggedNote) {
+                draggedNote.classList.remove('dragging');
+                draggedNote = null;
+                saveNotes();
+            }
+        });
+
+        document.querySelectorAll('.note-column').forEach(column => {
+            column.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                column.classList.add('drag-over');
+                const afterElement = getDragAfterElement(column, e.clientY);
+                const currentNote = document.querySelector('.note.dragging');
+                if (afterElement == null) {
+                    column.appendChild(currentNote);
+                } else {
+                    column.insertBefore(currentNote, afterElement);
+                }
+            });
+
+            column.addEventListener('dragleave', () => {
+                column.classList.remove('drag-over');
+            });
+
+            column.addEventListener('drop', (e) => {
+                column.classList.remove('drag-over');
+                if (draggedNote) {
+                    saveNotes();
+                }
+            });
+        });
+
+        function getDragAfterElement(column, y) {
+            const draggableNotes = [...column.querySelectorAll('.note:not(.dragging)')];
+            return draggableNotes.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: -Infinity }).element;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadNotes);
+    </script>
+</body>
+</html>
